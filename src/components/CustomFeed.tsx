@@ -32,7 +32,23 @@ const CustomFeed = async () => {
     },
     take: INFINITE_SCROLL_PAGINATION_RESULTS,
   });
-  return <PostFeed initialPosts={posts} />;
+
+    const allPosts = await db.post.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      subreddit: true,
+      author: true,
+      votes: true,
+      comments: true,
+    },
+    take: INFINITE_SCROLL_PAGINATION_RESULTS,
+  });
+
+  // if(!posts) return <PostFeed initialPosts={allPosts}  />
+
+  return <PostFeed initialPosts={allPosts} userId={session?.user?.id} />;
 };
 
 export default CustomFeed;

@@ -1,6 +1,6 @@
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { SubredditValidator } from "@/lib/validator/subreddit";
+import { SubredditSubscriptionValidator } from "@/lib/validator/subreddit";
 import { z } from "zod";
 
 export async function POST(req: Request) {
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name: subredditId } = SubredditValidator.parse(body);
+    const { subredditId } = SubredditSubscriptionValidator.parse(body);
 
     const subscriptionExists = await db.subscription.findFirst({
       where: {
@@ -22,11 +22,24 @@ export async function POST(req: Request) {
     });
 
     if (subscriptionExists) {
-      return new Response("Subscription already exists", { status: 400 });
+      return new Response("You've already subscribed to this subreddit", {
+        status: 400,
+      });
     }
+
+    await db.subscription.create({
+      data: {
+        subredditId,
+        userId: session.user.id,
+      },
+    });
+
     return new Response(subredditId);
   } catch (error) {
+    error;
     if (error instanceof z.ZodError) {
+      // eslint-disable-next-line no-console
+      console.log(error)
       return new Response(error.message, { status: 400 });
     }
 

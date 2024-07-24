@@ -1,12 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/Button";
+import { SubscribeToSubredditPayload } from "@/lib/validator/subreddit";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { startTransition } from "react";
 import { useToast } from "../hooks/use-toast";
 import { useCustomToast } from "@/hooks/use-custom-toast";
-import { subscribeToSubredditPayload } from "@/lib/validator/subreddit";
 
 interface SubscribeLeaveToggleProps {
   isSubscribed: boolean;
@@ -23,9 +23,9 @@ const SubscribeLeaveToggle = ({
   const { loginToast } = useCustomToast();
   const router = useRouter();
 
-  const { mutate: subscribe, isLoading: isSubLoading } = useMutation({ 
+  const { mutate: subscribe, isLoading: isSubLoading } = useMutation({
     mutationFn: async () => {
-      const payload: subscribeToSubredditPayload = {
+      const payload: SubscribeToSubredditPayload = {
         subredditId,
       };
 
@@ -47,8 +47,6 @@ const SubscribeLeaveToggle = ({
     },
     onSuccess: () => {
       startTransition(() => {
-        // Refresh the current route and fetch new data from the server without
-        // losing client-side browser or React state.
         router.refresh();
       });
       toast({
@@ -60,7 +58,7 @@ const SubscribeLeaveToggle = ({
 
   const { mutate: unsubscribe, isLoading: isUnsubLoading } = useMutation({
     mutationFn: async () => {
-      const payload: subscribeToSubredditPayload = {
+      const payload: SubscribeToSubredditPayload = {
         subredditId,
       };
 
@@ -76,8 +74,6 @@ const SubscribeLeaveToggle = ({
     },
     onSuccess: () => {
       startTransition(() => {
-        // Refresh the current route and fetch new data from the server without
-        // losing client-side browser or React state.
         router.refresh();
       });
       toast({
