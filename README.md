@@ -42,4 +42,4 @@ REDIS_URL=
 REDIS_SECRET=
 ```
 
-and that's all you need to get started!
+and that's all you need to get started!!
